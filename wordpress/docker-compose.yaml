@@ -54,8 +54,8 @@ services:
       - certbot-etc:/etc/letsencrypt
       - wordpress:/var/www/html
     command: certonly --webroot --webroot-path=/var/www/html --email samorenoq@eafit.edu.co
-    --agree-tos --no-eff-email --staging -d tet-proyecto2-samorenoq.tk -d www.tet-proyecto2-samorenoq.tk
-    
+      --agree-tos --no-eff-email --staging -d tet-proyecto2-samorenoq.tk -d www.tet-proyecto2-samorenoq.tk
+
 volumes:
   certbot-etc:
   wordpress:
