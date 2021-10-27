@@ -38,7 +38,7 @@ docker-compose run --rm --entrypoint "\
 echo
 
 
-echo "### Starting nginx ..."
+echo "### Starting webserver ..."
 docker-compose up --force-recreate -d webserver
 echo
 
@@ -76,5 +76,5 @@ docker-compose run --rm --entrypoint "\
     --force-renewal" certbot
 echo
 
-echo "### Reloading nginx ..."
-docker-compose exec nginx nginx -s reload
+echo "### Reloading webserver ..."
+docker-compose exec webserver webserver -s reload
