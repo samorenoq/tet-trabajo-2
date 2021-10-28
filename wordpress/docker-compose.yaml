@@ -7,6 +7,7 @@ services:
     env_file: .env
     environment:
       - MYSQL_DATABASE=wordpress
+      - MYSQL_RANDOM_ROOT_PASSWORD='1'
     volumes:
       - dbdata:/var/lib/mysql
     command: '--default-authentication-plugin=mysql_native_password'
@@ -38,10 +39,11 @@ services:
     restart: unless-stopped
     ports:
       - "80:80"
+      - 443:443
     volumes:
       - wordpress:/var/www/html
       - ./nginx-conf:/etc/nginx/conf.d
-      - certbot-etc:/etc/letsencrypt
+      - /etc/letsencrypt:/etc/letsencrypt
     networks:
       - app-network
 
@@ -57,10 +59,3 @@ services:
       --agree-tos --no-eff-email --staging -d tet-proyecto2-samorenoq.tk -d www.tet-proyecto2-samorenoq.tk
 
 volumes:
-  certbot-etc:
-  wordpress:
-  dbdata:
-
-networks:
-  app-network:
-    driver: bridge
