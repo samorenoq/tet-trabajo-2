@@ -1,0 +1,73 @@
+
+version: '3'
+
+services:
+
+  db:
+    image: mysql:5.7
+    container_name: db
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      - MYSQL_DATABASE=wordpress
+      - MYSQL_RANDOM_ROOT_PASSWORD='1'
+    volumes:
+      - ./data:/var/lib/mysql
+    networks:
+      - app-network
+
+  wordpress:
+    image: wordpress:5.1.1-fpm-alpine
+    container_name: wordpress
+    depends_on:
+      - db
+    restart: unless-stopped
+    env_file: .env
+    volumes:
+      - ./wordpress:/var/www/html
+    environment:
+      - WORDPRESS_DB_HOST=db:3306
+      - WORDPRESS_DB_USER=$MYSQL_USER
+      - WORDPRESS_DB_PASSWORD=$MYSQL_PASSWORD
+      - WORDPRESS_DB_NAME=wordpress
+    networks:
+      - app-network
+
+  webserver:
+    image: nginx:1.15.12-alpine
+    container_name: webserver
+    depends_on:
+      - wordpress
+    restart: unless-stopped
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf
+      - ./wordpress:/var/www/html
+      - ./logs:/var/log/nginx
+      - /etc/letsencrypt:/etc/letsencrypt
+    networks:
+      - app-network
+
+  certbot:
+    depends_on:
+      - webserver
+    image: certbot/certbot
+    container_name: certbot
+    volumes:
+      - certbot-etc:/etc/letsencrypt
+      - wordpress:/var/www/html
+    command: certonly --webroot --webroot-path=/var/www/html --email samorenoq@eafit.edu.co
+      --agree-tos --no-eff-email --staging -d tet-proyecto2-samorenoq.tk -d www.tet-proyecto2-samorenoq.tk
+    networks:
+      - app-network
+
+volumes:
+  certbot-etc:
+  wordpress:
+  data:
+
+networks:
+  app-network:
+    driver: bridge
